@@ -1,3 +1,8 @@
+
+
+[![DOI](https://zenodo.org/badge/684974504.svg)](https://zenodo.org/badge/latestdoi/684974504)
+
+
 # 2023_Adaptivity
 
 Code and data to reproduce the results of 
