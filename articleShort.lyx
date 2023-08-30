@@ -1,0 +1,3903 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass revtex4-1
+\begin_preamble
+% Added by lyx2lyx
+\renewcommand{\textendash}{--}
+\renewcommand{\textemdash}{---}
+
+\usepackage{orcidlink}
+
+\newcommand{\beginappendix}{%
+        \setcounter{table}{0}
+        \renewcommand{\thetable}{A\arabic{table}}%
+        \setcounter{figure}{0}
+        \renewcommand{\thefigure}{A\arabic{figure}}%
+     }
+\end_preamble
+\options aip, jcp,floatfix
+\use_default_options false
+\begin_modules
+fixltx2e
+fix-cm
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package babel
+\inputencoding auto
+\fontencoding T1
+\font_roman "palatino" "default"
+\font_sans "cmss" "default"
+\font_typewriter "cmtt" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement t
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks false
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "citecolor = blue, linkcolor = blue,  urlcolor  = blue"
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2.5cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 4
+\tocdepth 1
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle plain
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\size larger
+Consistency and adaptivity as complementary targets for the validation of
+ variance-based uncertainty quantification metrics in machine learning regressio
+n tasks 
+\end_layout
+
+\begin_layout Author
+Pascal PERNOT 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+orcidlink{0000-0001-8586-6222}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Affiliation
+Institut de Chimie Physique, UMR8000 CNRS,
+\begin_inset Newline newline
+\end_inset
+
+Université Paris-Saclay, 91405 Orsay, France
+\end_layout
+
+\begin_layout Author Email
+pascal.pernot@cnrs.fr
+\end_layout
+
+\begin_layout Abstract
+\noindent
+Reliable uncertainty quantification (UQ) in machine learning (ML) regression
+ tasks is becoming the focus of many studies in materials and chemical science.
+ It is now well understood that 
+\emph on
+average
+\emph default
+ calibration is insufficient, and most studies implement additional methods
+ testing the 
+\emph on
+conditional
+\emph default
+ calibration with respect to 
+\emph on
+uncertainty
+\emph default
+, that I propose to call 
+\emph on
+consistency
+\emph default
+.
+ Consistency is assessed, for instance by so-called reliability diagrams.
+ There exists however another path to go beyond average calibration, which
+ is the
+\emph on
+ conditional
+\emph default
+ calibration with respect to 
+\emph on
+input features
+\emph default
+, that I call 
+\emph on
+adaptivity
+\emph default
+.
+ In practice, adaptivity is the main concern of the final user of a ML-UQ
+ method, seeking for the reliability of predictions and uncertainties for
+ any point in features space.
+ This article aims to show that consistency and adaptivity are complementary
+ targets, and that a good consistency does not imply a good adaptivity.
+ Simple validation methods are proposed and illustrated on a representative
+ example.
+ 
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+\noindent
+The quest for trust or confidence in the predictions of data-based algorithms
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Vishwakarma2021,Gruich2023,Heid2023"
+
+\end_inset
+
+ has led to a profusion of uncertainty quantification (UQ) methods in machine
+ learning (ML).
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pearce2018,Musil2019,Hirschfeld2020,Tran2020,Abdar2021,Gawlikowski2021,Tynes2021,Zelikman2021,Hu2022,Varivoda2022,He2023,Tohme2023,Busk2023_arXiv"
+
+\end_inset
+
+ However, not all of these UQ methods provide uncertainties that can be
+ relied upon,
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Liu2021,Pernot2022b"
+
+\end_inset
+
+ notably if, as in metrology, one expects uncertainty to inform us on a
+ range of plausible values for a predicted property.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "GUM,Irikura2004"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In pre-ML computational chemistry, UQ metrics consisted essentially in 
+\emph on
+standard uncertainty
+\emph default
+, i.e.
+ the standard deviation of the distribution of plausible values (a 
+\emph on
+variance-based
+\emph default
+ metric), or 
+\emph on
+expanded uncertainty
+\emph default
+, i.e.
+ the half-range of a prediction interval, typically at the 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% level (an 
+\emph on
+interval-based
+\emph default
+ metric).
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Ruscic2004,Irikura2004"
+
+\end_inset
+
+ The advent of ML methods provided UQ metrics beyond this standard setup,
+ for instance distances in feature or latent space
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Janet2019,Hullermeier2021,Hu2022"
+
+\end_inset
+
+ or the recent 
+\begin_inset Formula $\Delta$
+\end_inset
+
+-metric,
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Korolev2022"
+
+\end_inset
+
+ which have no direct statistical or probabilistic meaning.
+ These metrics might however be converted to variance-based metrics by 
+\emph on
+post hoc
+\emph default
+ recalibration methods such as temperature scaling
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Guo2017,Kuleshov2018,Levi2022"
+
+\end_inset
+
+ and isotonic regression
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Busk2022"
+
+\end_inset
+
+, or to interval-based metrics by conformal inference.
+\color orange
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Vovk2012,Angelopoulos2021,Cauchois2021,Feldman2021"
+
+\end_inset
+
+
+\color inherit
+ Nevertheless, all UQ metrics need to be validated to ensure that they are
+ adapted to their intended use.
+ In this study, I focus on the reliability of the prediction of properties
+ at the molecule-specific level.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Reiher2022"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The validation of UQ metrics is designed around the concept of 
+\emph on
+calibration
+\emph default
+.
+ A handful of validation methods exist that explore more or less complementary
+ aspects of calibration.
+ A trio of methods seems to have recently taken the center stage: the 
+\emph on
+reliability diagram
+\emph default
+ (or RMSE vs RMV plot), the 
+\emph on
+calibration curve
+\emph default
+ and the 
+\emph on
+confidence curve
+\emph default
+.
+ They implement three different approaches to calibration which are not
+ necessarily independent, but it is essential to realize that they do not
+ cover the full spectrum of calibration requirements.
+ In particular, none of these methods addresses the essential reliability
+ of predicted uncertainties with respect to the input features, or so-called
+ 
+\emph on
+individual
+\emph default
+ calibration
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Chung2020,Zhao2020"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The aim of this article is to propose a complete validation framework based
+ on conditional calibration and the complementary aspects of consistency
+ (conditional calibration with respect to uncertainty) and adaptivity (condition
+al calibration with respect to input features).
+ The next section (Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Validation-model-var"
+
+\end_inset
+
+) introduces the notations and concepts for the validation of variance-based
+ UQ metrics.
+ The validation methods are presented in Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Consistency-testing"
+
+\end_inset
+
+ and applied to a running example.
+ The results are discussed in Sec.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Discussion"
+
+\end_inset
+
+, along with the adaptation of other validation methods to adaptivity testing.
+ 
+\end_layout
+
+\begin_layout Section
+Validation of variance-based UQ metrics
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Validation-model-var"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The validation of variance-based UQ metrics requires
+\color orange
+ 
+\color inherit
+at minimum a set of predicted values 
+\begin_inset Formula $V=\{V_{i}\}_{i=1}^{M}$
+\end_inset
+
+, the corresponding uncertainties 
+\begin_inset Formula $u_{V}=\{u{}_{V}\}_{i=1}^{M}$
+\end_inset
+
+, and reference data to compare with 
+\begin_inset Formula $R=\{R_{i}\}_{i=1}^{M}$
+\end_inset
+
+ (with their uncertainties 
+\begin_inset Formula $u_{R}=\{u_{R_{i}}\}_{i=1}^{M}$
+\end_inset
+
+, when relevant).
+ From these, one estimates 
+\emph on
+prediction errors
+\emph default
+ 
+\begin_inset Formula $E=R-V$
+\end_inset
+
+ and 
+\emph on
+prediction uncertainties
+\emph default
+ 
+\begin_inset Formula $u_{E}=(u_{R}^{2}+u_{V}^{2})^{1/2}$
+\end_inset
+
+.
+ These data enable to test average calibration (Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Average-calibration."
+
+\end_inset
+
+) and 
+\emph on
+consistency
+\emph default
+ as conditional calibration with respect to uncertainty (Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Individual,-conditional-and"
+
+\end_inset
+
+).
+ An additional set of 
+\emph on
+input features
+\emph default
+ or adequate proxies 
+\begin_inset Formula $X_{j}=\{X_{j,i}\}_{i=1}^{M}$
+\end_inset
+
+ is required for a full validation setup including conditional calibration
+ with respect to inputs or 
+\emph on
+adaptivity
+\emph default
+ (Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Individual,-conditional-and"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Average calibration
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Average-calibration."
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The validation of prediction uncertainty 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ can be based on the requirement that it correctly quantifies the 
+\emph on
+dispersion
+\emph default
+ of prediction errors 
+\begin_inset Formula $E$
+\end_inset
+
+.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022a,Pernot2022b"
+
+\end_inset
+
+ Following the metrological definition of uncertainty, this is valid for
+ so-called adequate models, i.e.
+ models with negligible systematic or model errors.
+ For models with non-negligible inadequacy levels, as can be expected from
+ ML methods, prediction uncertainty is often designed to cover also for
+ model errors.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2017"
+
+\end_inset
+
+ In such cases, validation should account for both bias and dispersion component
+s of the errors.
+ I will not discuss here the problems of reporting such uncertainties for
+ actionable predictions or risk assessment, but will mostly focus on a self-cons
+istent setup for the validation of UQ calibration where one seeks a reliable
+ estimation of the amplitude of errors.
+\end_layout
+
+\begin_layout Standard
+In such conditions, the basis for validation is to require that the mean
+ squared errors (MSE) is close to the 
+\emph on
+mean variance
+\emph default
+ over the validation dataset
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2017"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+<E^{2}>\simeq<u_{E}^{2}>
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+One notes that this expression evolves to 
+\begin_inset Formula $Var(E)\simeq<u_{E}^{2}>$
+\end_inset
+
+ when the errors are unbiased and can therefore be considered as a general
+ formulation of calibration for variance-based UQ metrics.
+ 
+\end_layout
+
+\end_inset
+
+However, this formula ignores the essential one-to-one pairing of errors
+ and uncertainties, and a more stringent approach is based on 
+\emph on
+z
+\emph default
+-scores (
+\begin_inset Formula $Z=E/u_{E}$
+\end_inset
+
+), using the condition
+\begin_inset Formula 
+\begin{align}
+<Z^{2}> & \simeq1\label{eq:Z2cal}
+\end{align}
+
+\end_inset
+
+which is related to the Birge ratio
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Birge1932"
+
+\end_inset
+
+ for the validation of the residuals of least-squares fit
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+
+\series bold
+.
+\begin_inset VSpace bigskip*
+\end_inset
+
+Remarks.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ are obtained as the means and standard deviations of small ensembles of
+ predictions (e.g.
+ with less than 30 elements) these formulas have to be adapted, and hypotheses
+ need then to be made on the error distributions for these small ensembles
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+.
+ For a normal generative distribution of errors, the distribution of the
+ mean of 
+\begin_inset Formula $n$
+\end_inset
+
+ values (ensemble size) is a Student's-
+\emph on
+t
+\emph default
+ distribution with 
+\begin_inset Formula $\nu=n-1$
+\end_inset
+
+ degrees of freedom, and one should have 
+\begin_inset Formula $<Z^{2}>-<Z>^{2}\simeq\nu/(\nu-2)$
+\end_inset
+
+.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Unbiasedness is not an essential part of calibration, but it is a highly
+ desirable property for predictions and 
+\emph on
+z
+\emph default
+-scores and will be systematically considered as a test of prediction quality,
+ i.e.
+\begin_inset Formula 
+\begin{equation}
+<Z>\simeq0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For unbiased 
+\emph on
+z
+\emph default
+-scores, one recovers the variance test proposed previously by Pernot
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+Var(Z)\simeq1\label{eq:ZV}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The satisfaction of Eq.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Z2cal"
+
+\end_inset
+
+ validates 
+\emph on
+average
+\emph default
+ 
+\emph on
+calibration
+\emph default
+, which is a necessary requirement, but does not guarantee the reliability
+ of individual uncertainties, as average calibration can be satisfied by
+ a compensation of under- and over-estimated values of 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+.
+ The next section presents an approach to more local validation techniques.
+
+\series bold
+ 
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+\begin_inset Formula $\vartriangleright$
+\end_inset
+
+ Example
+\series default
+.
+ In a recent article, Busk 
+\emph on
+et al.
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Busk2022"
+
+\end_inset
+
+ extended a message passing neural network in order to predict properties
+ of molecules and materials with a calibrated probabilistic predictive distribut
+ion.
+ A 
+\emph on
+post hoc
+\emph default
+ isotonic regression on data unseen during the training was used to ensure
+ calibration and was applied to materials science datasets.
+ I consider here the QM9 test dataset, which consists of 13
+\begin_inset space \thinspace{}
+\end_inset
+
+885 predicted atomization energies (
+\begin_inset Formula $V,\thinspace u_{V}$
+\end_inset
+
+), reference values (
+\begin_inset Formula $R$
+\end_inset
+
+), and molecular formulas.
+ Average calibration for this dataset is satisfactory, with 
+\begin_inset Formula $<Z^{2}>=0.96(2)\simeq1$
+\end_inset
+
+, and 
+\emph on
+z
+\emph default
+-scores are unbiased in average, with 
+\begin_inset Formula $<Z>=0.0082(83)\simeq0$
+\end_inset
+
+.
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Formula $\boxempty$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Individual, conditional and local calibration
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Individual,-conditional-and"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The best calibration one could ideally achieve is 
+\emph on
+individual
+\emph default
+ calibration, a condition where one is confident that uncertainty is correctly
+ calibrated for any individual prediction.
+ The formulation
+\emph on
+ 
+\emph default
+of individual calibration
+\emph on
+ 
+\emph default
+for probabilistic forecasters by Chung
+\emph on
+ et al.
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Chung2020"
+
+\end_inset
+
+, led them to formalize it as 
+\emph on
+conditional calibration
+\emph default
+ 
+\emph on
+in input features space.
+
+\emph default
+ In practice (i.e.
+ for finite size datasets), individual calibration has been shown to be
+ unreachable
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Zhao2020"
+
+\end_inset
+
+, and an alternative is to consider a discretized form as 
+\emph on
+local 
+\emph default
+or
+\emph on
+ group
+\emph default
+ calibration
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Luo2021"
+
+\end_inset
+
+.
+ This is reflected in the practical estimation of conditional statistics
+ by data binning or grouping
+\emph on
+\color orange
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Chung2020"
+
+\end_inset
+
+
+\emph default
+\color inherit
+.
+ In a similar spirit, 
+\emph on
+conditional coverage
+\emph default
+ with respect to input features was proposed by Vovk
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Vovk2012"
+
+\end_inset
+
+ to assess the 
+\emph on
+adaptivity
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Angelopoulos2021"
+
+\end_inset
+
+ of conformal predictors.
+
+\color orange
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+
+\color orange
+As for individual calibration, the impossibility of 
+\emph on
+object conditional validity
+\emph default
+ was demonstrated
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Bellotti2021"
+
+\end_inset
+
+
+\emph on
+ + 
+\emph default
+Feldman2021
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Feldman2021"
+
+\end_inset
+
+ Barber2019
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Barber2019"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For variance-based UQ metrics, Levi
+\emph on
+ et al.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Levi2020,Levi2022"
+
+\end_inset
+
+
+\emph default
+ proposed
+\emph on
+ 
+\emph default
+an approach
+\emph on
+ 
+\emph default
+based on 
+\emph on
+conditional calibration in uncertainty space
+\emph default
+, namely
+\begin_inset Formula 
+\begin{equation}
+<E^{2}|u_{E}=\sigma>\simeq\sigma^{2},\,\forall\sigma>0\label{eq:varEvalCond-1}
+\end{equation}
+
+\end_inset
+
+which led to the popular 
+\emph on
+reliability diagrams
+\emph default
+ or 
+\emph on
+RMSE vs RMV
+\emph default
+ plots, also called 
+\emph on
+calibration diagrams
+\emph default
+ by Laves 
+\emph on
+et al.
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Laves2020"
+
+\end_inset
+
+.
+ Levi 
+\emph on
+et al.
+
+\emph default
+ claim that, assuming that each uncertainty value occurs only once in the
+ dataset, their method 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+captures the desired meaning of calibration, i.e., for each individual example,
+ one can correctly predict the expected mistake
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+
+\color orange
+ 
+\color inherit
+In practice, the unicity assumption faces two major difficulties: (1) some
+ datasets are 
+\emph on
+stratified
+\emph default
+, with several occurrences of the same uncertainty value, and (2) the implementa
+tion of conditional calibration requires to group data to estimate the mean
+ squared error (MSE), breaking the one-to-one correspondence between the
+ tested uncertainties and errors, as mentioned above for average calibration.
+
+\color orange
+ 
+\end_layout
+
+\begin_layout Standard
+In consequence, conditional calibration based on Eq.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:varEvalCond-1"
+
+\end_inset
+
+ is not sufficient to validate calibration at the individual level.
+ To go further, one should consider other conditioning variables besides
+ 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+, notably input features or variables of interest for the end-user of a
+ ML model, as proposed for probabilistic forecasters
+\emph on
+\color orange
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Chung2020"
+
+\end_inset
+
+
+\emph default
+\color inherit
+ and conformal predictors
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Vovk2012,Angelopoulos2021"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Building on the the works of Levi 
+\emph on
+et al
+\emph default
+.
+\emph on
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Levi2020"
+
+\end_inset
+
+,
+\emph default
+ Pernot
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+ and Angelopoulos 
+\emph on
+et al.
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Angelopoulos2021"
+
+\end_inset
+
+ about conditional calibration, I propose here to distinguish two calibration
+ targets (besides average calibration), namely 
+\emph on
+consistency
+\emph default
+ as the conditional calibration with respect to prediction uncertainty,
+ and 
+\emph on
+adaptivity
+\emph default
+ as the conditional calibration with respect to input features:
+\end_layout
+
+\begin_layout Itemize
+\noindent
+
+\series bold
+Consistency
+\series default
+ is a special case of conditional calibration, in the sense that it involves
+ only 
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+.
+ Using the 
+\emph on
+z
+\emph default
+-scores statistics introduced for average calibration, one can define consistenc
+y by the following equation
+\begin_inset Formula 
+\begin{align}
+<Z^{2}|u_{E}=\sigma> & \simeq1,\,\forall\sigma>0\label{eq:LZMS}
+\end{align}
+
+\end_inset
+
+Consistency is related to the metrological consistency of measurements
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kacker2010"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+
+\series bold
+Adaptivity
+\series default
+ is also conveniently formulated with 
+\emph on
+z
+\emph default
+-scores as
+\begin_inset Formula 
+\begin{align}
+<Z^{2}|X=x> & \simeq1,\,\forall x\in\mathcal{X}
+\end{align}
+
+\end_inset
+
+It involves more information than consistency: 
+\begin_inset Formula $X$
+\end_inset
+
+, 
+\begin_inset Formula $E$
+\end_inset
+
+, and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Unless there is a monotonous transformation between 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ and 
+\begin_inset Formula $X$
+\end_inset
+
+, consistency and adaptivity are distinct calibration targets, and a good
+ consistency does not augur of a good adaptivity and vice-versa, so that
+ both should be assessed.
+ Note that 
+\emph on
+tightness
+\emph default
+, as introduced earlier by Pernot
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+, covers both consistency and adaptivity.
+ 
+\end_layout
+
+\begin_layout Standard
+Average calibration is a necessary condition to reach consistency or adaptivity.
+ In fact, consistency/adaptivity expressed as conditional calibration should
+ imply average calibration, but the splitting of the data into subsets makes
+ that the power of individual consistency/adaptivity tests is smaller than
+ for the full validation set.
+ It is therefore better to test average calibration separately, notably
+ for small validation datasets.
+ 
+\end_layout
+
+\begin_layout Standard
+Most methods used to this day for the validation of ML-UQ calibration in
+ chemical/materials sciences involve only 
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ (reliability diagrams, calibration curves, confidence curves...)
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Scalia2020"
+
+\end_inset
+
+.
+ Adaptivity can thus be considered as a blind spot in UQ validation, despite
+ its necessity to achieve reliable UQ at the molecule-specific level advocated
+ by Reiher
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Reiher2022"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Validation methods
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Consistency-testing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+This section presents 
+\emph on
+z
+\emph default
+-scores-based methods to assess and validate consistency and adaptivity.
+ The adaptation of popular methods such as reliability diagrams or confidence
+ curves is treated later, in the discussion (Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Discussion"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Homoscedasticity plots of 
+\emph on
+z
+\emph default
+-scores
+\end_layout
+
+\begin_layout Standard
+\noindent
+A simple way to estimate consistency is to plot the 
+\emph on
+z
+\emph default
+-scores 
+\begin_inset Formula $Z$
+\end_inset
+
+ as a function of 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022b"
+
+\end_inset
+
+.
+ The dispersion of 
+\begin_inset Formula $Z$
+\end_inset
+
+ should be homogeneous along 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ (homoscedasticity) and, ideally, symmetric around 
+\begin_inset Formula $Z=0$
+\end_inset
+
+ (unbiasedness).
+ In areas where the z-scores are biased, is any, one should observe a larger
+ dispersion.
+ This might not be easy to appreciate visually, and 
+\emph on
+running statistics 
+\emph default
+can be superimposed to the data cloud such as the 
+\emph on
+mean
+\emph default
+, to be compared with 
+\begin_inset Formula $Z=0$
+\end_inset
+
+, and 
+\emph on
+mean squares
+\emph default
+ to be compared with the 
+\begin_inset Formula $Z=1$
+\end_inset
+
+ line.
+ 
+\end_layout
+
+\begin_layout Standard
+This plot is easily extended to any variable 
+\begin_inset Formula $X$
+\end_inset
+
+ other than 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ and can be directly applied to the visual appreciation of adaptivity.
+ Note that in the present context, the 
+\begin_inset Formula $Z$
+\end_inset
+
+ vs 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ plot is preferable to the 
+\begin_inset Formula $E$
+\end_inset
+
+ vs 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ plot used in other studies 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Janet2019,Pernot2022b,Hu2022"
+
+\end_inset
+
+, as it offers a consistent representation for both consistency and adaptivity
+ estimation.
+ 
+\end_layout
+
+\begin_layout Standard
+For cases where consistency/adaptivity cannot be frankly rejected on the
+ basis of the shape or scale of this data cloud, it is necessary to perform
+ more quantitative tests as presented below.
+ One should not conclude on good consistency/adaptivity based solely on
+ this kind of plot.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+\begin_inset Formula $\vartriangleright$
+\end_inset
+
+ Example, continued.
+
+\series default
+ The molecular mass (
+\begin_inset Formula $X_{1}$
+\end_inset
+
+) and fraction of heteroatoms (
+\begin_inset Formula $X_{2}$
+\end_inset
+
+) are generated from the formulas of the QM9 dataset, and used as proxies
+ for input features.
+ They are practically uncorrelated between themselves and weakly correlated
+ with 
+\begin_inset Formula $|E|$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ (Table
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Rank-correlation-coefficients"
+
+\end_inset
+
+).
+ The dataset can thus be tested for consistency and adaptivity.
+ 
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $|E|$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $u_{E}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.03
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.12 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.30
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $|E|$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.32
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Rank-correlation-coefficients"
+
+\end_inset
+
+Rank correlation coefficients for the
+\color violet
+ 
+\color inherit
+
+\begin_inset Formula $\left\{ X_{1},X_{2},|E|,u_{E}\right\} $
+\end_inset
+
+ set.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The homoscedasticity of 
+\emph on
+z
+\emph default
+-scores for the QM9 dataset is estimated against 
+\begin_inset Formula $u_{E},$
+\end_inset
+
+ 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+ (Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plot-of-errors"
+
+\end_inset
+
+).
+ One sees in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plot-of-errors"
+
+\end_inset
+
+(a) that the data points are fairly symmetrically dispersed (mean - orange
+ line) and that the running mean squares (red curve) follows rather closely
+ the 
+\begin_inset Formula $Z=1$
+\end_inset
+
+ line, up to 
+\begin_inset Formula $uE\simeq0.02$
+\end_inset
+
+
+\begin_inset space \thinspace{}
+\end_inset
+
+eV, after which it lies at higher values.
+ However, this concerns a small population (980 points) and the problem
+ could be due to the data sparsity in this uncertainty range.
+ 
+\begin_inset Float figure
+placement t
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figs/FigShort_01a.png
+	lyxscale 25
+	width 33text%
+	BoundingBox 0bp 0bp 1200bp 1100bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Figs/FigShort_01b.png
+	lyxscale 25
+	width 33text%
+	BoundingBox 0bp 0bp 1200bp 1100bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Figs/FigShort_01c.png
+	lyxscale 25
+	width 33text%
+	BoundingBox 0bp 0bp 1200bp 1100bp
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Plot-of-errors"
+
+\end_inset
+
+QM9 dataset: 
+\emph on
+z
+\emph default
+-scores vs.
+ uncertainty (a), molecular mass (b) and the fraction of heteroatoms (c).
+ Running statistics (mean (
+\begin_inset Formula $<Z>$
+\end_inset
+
+) in orange and mean squares (
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+) in red) are estimated for a sliding window of size 
+\begin_inset Formula $M/100$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $Z$
+\end_inset
+
+ vs 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ plot in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plot-of-errors"
+
+\end_inset
+
+(b) enables to check if calibration is homogeneous in molecular mass space.
+ The running mean does not deviate notably from 0, and the shape of the
+ running mean squares line, erring towards small 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+ values, indicates that uncertainties are probably overestimated for masses
+ smaller than the main mass cluster (around 125-130
+\begin_inset space \thinspace{}
+\end_inset
+
+Da) evolving to a slight underestimation above this peak.
+ This trend hints at a lack of adaptivity.
+ A similar plot is shown for 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+, the fraction of heteroatoms [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plot-of-errors"
+
+\end_inset
+
+(c)] where the running mean presents a weak but systematic trend from positive
+ to negative values.
+ Besides, the 
+\emph on
+z
+\emph default
+-scores are under-dispersed for molecules with low heteroatoms fractions
+ (below 0.1), after which the running mean squares line presents notable
+ oscillations around the 
+\begin_inset Formula $Z=1$
+\end_inset
+
+ reference line and seem to stabilize above 
+\begin_inset Formula $X_{2}=0.4$
+\end_inset
+
+, where the data are sparse.
+\end_layout
+
+\begin_layout Standard
+In this dataset, stratification of the conditioning variables is notable.
+ For instance, the set of uncertainties 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ contains only 138 distinct numerical values, a fact which can be attributed
+ to recalibration by the step-wise isotonic regression function.
+ But stratification might also occur independently of any algorithm: the
+ vector of masses 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ contains 398 unique values, and the fraction of heteroatoms is strongly
+ stratified with only 76 values.
+\end_layout
+
+\begin_layout Standard
+From these three plots, one gets the impression that calibration is rather
+ good at the core of the dataset (where the density of data is highest),
+ but possibly more problematic in the margins.
+ A more quantitative analysis of these features is desirable, but one might
+ already conclude that adaptivity is problematic.
+\begin_inset space \hfill{}
+\end_inset
+
+
+\size scriptsize
+ 
+\begin_inset Formula $\boldsymbol{\square}$
+\end_inset
+
+
+\size default
+ 
+\end_layout
+
+\begin_layout Subsection
+Local calibration
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Local-calibration-error"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Local Z-Mean and Z-Mean-Squares analysis
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Local-Z-Variance-analysis"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Testing for consistency is based on a binning of the data according to increasin
+g uncertainties.
+ A Local Z Variance (LZV) analysis was introduced by Pernot
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022a"
+
+\end_inset
+
+ as a method to test local calibration: for each bin, one estimates 
+\begin_inset Formula $\mathrm{Var}(Z)$
+\end_inset
+
+ and compares it to 1.
+ In the present framework, the LZV analysis is adapted to account for the
+ possibility of accepting significant deviations of local 
+\begin_inset Formula $<Z>$
+\end_inset
+
+ values from 0, and one will be using the Local Z Mean Squares (LZMS) statistic,
+ based on Eq.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:LZMS"
+
+\end_inset
+
+.
+ A Local Z Mean statistic can also be used to check the local unbiasedness
+ of 
+\emph on
+z
+\emph default
+-scores.
+\end_layout
+
+\begin_layout Standard
+Assessment of a LZMS analysis is based on two criteria, the deviation of
+ the LZMS values from 1 and the homogeneity of their distribution along
+ the conditioning variable.
+\end_layout
+
+\begin_layout Standard
+The maximal admissible deviations depend on the bin size and error distribution.
+ For instance, one should expect larger deviations from errors and uncertainties
+ obtained as statistical summaries of small ensembles than from errors and
+ uncertainties describing a normal distribution.
+ Unless the error model is well known and controlled, which might not be
+ the case for post-hoc calibration methods, it is impossible to define a
+ threshold to LZMS values for validation purpose.
+ It is therefore necessary to estimate confidence intervals (CIs) on the
+ LZMS values to test their consistency with the target value.
+ 
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $<Z>$
+\end_inset
+
+, the standard formula based on the quantiles of the Student's-
+\emph on
+t
+\emph default
+ distribution provides intervals with satisfactory coverage, even for small
+ samples and non-normal distribution with finite variance.
+ The case of 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+
+\color orange
+ 
+\color inherit
+is more difficult, as standard formulas fare poorly when one deviates from
+ the standard normality of the 
+\emph on
+z
+\emph default
+-scores.
+ The same problem was observed for 
+\begin_inset Formula $Var(Z)$
+\end_inset
+
+,
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022a"
+
+\end_inset
+
+ and a convergence and power study concluded that the most reliable approach
+ was to use bootstrapping with samples of at least 100 points.
+ In such conditions, the effective coverage of 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% CIs reaches at least 90
+\begin_inset space \thinspace{}
+\end_inset
+
+% for 
+\begin_inset Formula $Var(Z)$
+\end_inset
+
+ and 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+.
+ To achieve a 95% coverage with a Student's distribution of 
+\emph on
+z
+\emph default
+-scores, 1000 points per bin are required, which might limit the resolution
+ of the local analysis.
+ When in doubt, the LZMS analysis can be performed with several bin sizes
+ to assess its reliability.
+ When reliable CIs are obtained, the proportion of valid intervals, i.e.
+ those covering the target value, can be used as a validation metric (Sect.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Validation-metrics"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The homogeneity of the distribution of the LZMS values along the conditioning
+ variable can often be appreciated visually (any cluster showing systematic
+ deviation from the target represents a local calibration problem).
+ However, the graph might sometimes be crowded, and the auto-correlation
+ function (ACF) of the LZMS statistics might help to detect the presence
+ of unsuitable serial correlations.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Validation metrics
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Validation-metrics"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Calibration metrics
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Maupin2018,Vishwakarma2021"
+
+\end_inset
+
+ are widely used in the ML-UQ literature: for instance, metrics have been
+ designed for calibration curves
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kuleshov2018,Tran2020"
+
+\end_inset
+
+, reliability diagrams
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Levi2020"
+
+\end_inset
+
+, and confidence curves
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Scalia2020"
+
+\end_inset
+
+.
+ These metrics are generally used to compare and rank UQ methods, but they
+ do not provide a validation setup accounting for the statistical fluctuations
+ due to finite-sized datasets or bins numbers.
+ It has been shown recently
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2023a_arXiv"
+
+\end_inset
+
+, that the 
+\emph on
+expected normalized calibration error
+\emph default
+ (ENCE)
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Levi2020,Scalia2020,Vazquez-Salazar2022"
+
+\end_inset
+
+ cannot directly be used as a validation metric.
+ 
+\end_layout
+
+\begin_layout Standard
+The availability of confidence intervals on the local statistics of the
+ LZM and LZMS methods provides the basis for a validation metric.
+ For a perfectly calibrated dataset, the fraction of binned statistics with
+ a confidence interval containing the target value should be close to the
+ coverage probability of the confidence intervals.
+ Namely, about 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% of the binned 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+ values should have 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% confidence intervals containing the target value.
+ Let us call this fraction of validated intervals 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+.
+ In practice, one should not expect to recover exactly 95
+\begin_inset space \thinspace{}
+\end_inset
+
+%, and a confidence interval for 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ has to be estimated from the binomial distribution to account for the limited
+ number of bins
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022a"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Binning/grouping strategies
+\end_layout
+
+\begin_layout Standard
+\noindent
+A sensitive point for the LZMS analysis is the choice of a binning scheme.
+ The bin size should be small enough to get as close as possible to individual
+ calibration testing and to provide information on the localization of any
+ miscalibrated area, but also large enough to ensure a reasonable power
+ for statistical estimation and testing of binned statistics.
+ Moreover, stratification of the dataset, if present, has also to be considered.
+\end_layout
+
+\begin_layout Paragraph
+Effect of equal-size binning for stratified conditioning variables.
+\end_layout
+
+\begin_layout Standard
+The equal-size binning scheme is a standard approach implemented for instance
+ in reliability diagrams
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Levi2022"
+
+\end_inset
+
+.
+ One has to be aware that it does not account for the possible stratification
+ of the conditioning variable.
+ It was shown recently that bin-based statistics in such conditions are
+ affected by the order of the data in the analyzed dataset.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2023b_arXiv"
+
+\end_inset
+
+ This effect is unavoidable and its impact on the statistics should be checked.
+ Its amplitude can be assessed by repeated estimation of the binned statistics
+ for randomly reordered datasets.
+\end_layout
+
+\begin_layout Standard
+Note that getting a good estimate of 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ requires contradictory conditions, i.e.
+ reliable confidence intervals for the binned statistics, therefore a number
+ of points per bin as large as possible, but also a number of bins as large
+ as possible.
+ A good balance is obtained by choosing the number of bins as the square
+ root of the dataset's size (
+\begin_inset Formula $N=M^{1/2})$
+\end_inset
+
+.
+ The use of this statistic should therefore preferably be reserved to large
+ datasets, with typically more than 
+\begin_inset Formula $10^{4}$
+\end_inset
+
+ points.
+ In all cases one should not use it blindly.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Stratified binning.
+\end_layout
+
+\begin_layout Standard
+For notably stratified conditioning variables, a binning scheme preserving
+ the strata might be more appropriate than equal-size binning, as it avoids
+ the splitting of strata into arbitrary bins.
+ However, many strata might
+\color orange
+ 
+\color inherit
+have sizes too small to enable reliable statistics.
+ Instead of rejecting these low-counts strata, one can merge them with their
+ neighbors.
+ I use here an iterative algorithm where any small stratum (typically less
+ than 100 points) is merged with the smallest of its neighbors.
+ The value and counts of the strata are updated according to the relative
+ counts of the merged strata.
+ This simple merging is iterated until no small stratum is left.
+ The result is not affected by data ordering.
+ An inconvenience is that one does not have the control of the number of
+ bins, which might get low for the estimation of the 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ validation statistic.
+\end_layout
+
+\begin_layout Paragraph
+Choice of conditioning variables or groups for adaptivity.
+\end_layout
+
+\begin_layout Standard
+\noindent
+Although using one or several input features as conditioning variable is
+ the most direct way to test adaptivity, it might not always be practical,
+ for instance when input features are strings, graphs or images.
+ In such cases, one might try to use dimension reduction algorithms such
+ as t-SNE
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Vandermaaten2008,Janet2019"
+
+\end_inset
+
+ or UMAP
+\begin_inset CommandInset citation
+LatexCommand citep
+key "McInnes2018"
+
+\end_inset
+
+ in order to define chemically relevant groups.
+ One might also use proxy variables of interest to the final user, latent
+ variables, or even the predicted property value 
+\begin_inset Formula $V$
+\end_inset
+
+.
+ Using 
+\begin_inset Formula $V$
+\end_inset
+
+ answers to the question: 
+\emph on
+are uncertainties reliable over the full range of predictions
+\emph default
+ ? A problem with 
+\begin_inset Formula $V$
+\end_inset
+
+ is that is is potentially strongly correlated with 
+\begin_inset Formula $E$
+\end_inset
+
+ which might lead to spurious features in the LZMS analysis.
+ For the complementarity of consistency and adaptivity tests, it is better
+ to use 
+\begin_inset Formula $X$
+\end_inset
+
+ variables that are not strongly correlated to 
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+.
+ If there is no sensible way to define a conditioning variable, one might
+ consider adversarial group validation.
+\end_layout
+
+\begin_layout Paragraph
+Adversarial groups.
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Adversarial-groups."
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+One can avoid to choose conditioning variables by designing random groups
+ to be tested for calibration, in the spirit of 
+\emph on
+adversarial group calibration
+\emph default
+ (AGC).
+ In AGC, the largest calibration error is estimated over a set of random
+ samples of a given size, for sizes varying from a small fraction of the
+ dataset to the full dataset.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Chung2020,Zhao2020,Chung2021"
+
+\end_inset
+
+ This approach is mostly used to make comparisons between datasets, but
+ does not provide a validation setup.
+ As exposed above, even for fully calibrated datasets, the amplitude of
+ calibration errors depends also on the group size and error distribution,
+ which makes comparisons difficult for datasets with unknown or different
+ distributions.
+ 
+\end_layout
+
+\begin_layout Standard
+It is possible to design an AG 
+\emph on
+validation
+\emph default
+ method based of the 
+\begin_inset Formula $f_{v,LZMS}$
+\end_inset
+
+ metric.
+ However, following preliminary test along this line, I found three main
+ limitations that make it not so interesting: (1) if a dataset presents
+ localized calibration issues, there is a low probability to randomly sample
+ groups revealing this problem, and one will get an overall optimistic diagnosti
+c; (2) random groups are not interpretable, and there is therefore very
+ few to learn about the origins of miscalibration; and (3) the computer
+ time for the repeated estimation of converged bootstrap-based CIs might
+ be prohibitive considering the small information return.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+\begin_inset Formula $\vartriangleright$
+\end_inset
+
+ Example, continued.
+
+\series default
+ The unbiasedness and consistency of the QM9 validation set are tested by
+ performing a LZM/LZMS analysis in 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ space with 100 equi-sized bins.
+ One sees for 
+\begin_inset Formula $<Z>$
+\end_inset
+
+ [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eqBin"
+
+\end_inset
+
+(a)] that there are no outstanding deviations of the binned statistic, except
+ for the rightmost point, in agreement with the observation on the previous
+ 
+\emph on
+z
+\emph default
+-scores plots.
+ The fraction of valid interval is high (
+\begin_inset Formula $f_{v,ZM}=0.97$
+\end_inset
+
+) and in statistical agreement with the expected 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% value.
+ For 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+ [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eqBin"
+
+\end_inset
+
+(d)], one observes slightly more deviant bins, with 
+\begin_inset Formula $f_{v,ZMS}=0.85$
+\end_inset
+
+, but no major trend, as confirmed by the ACF analysis [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eqBin"
+
+\end_inset
+
+(g)].
+ Consistency is therefore not perfect but without strong local miscalibration.
+ As the uncertainties are stratified, one should consider the impact of
+ data ordering on these statistics.
+ 
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02a.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02b.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02c.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02d.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02e.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02f.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02g.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02h.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_02i.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:eqBin"
+
+\end_inset
+
+QM9 validation dataset.
+ Consistency and adaptivity validation plots: LZM and LZMS analyses and
+ ACF of LZMS vs.
+ 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ (a, d, g), molecular mass 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ (b, e, h) and fraction of heteroatoms 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+(c, f, i).
+ The statistics are based 100 equal-sized bins and the CIs for the 
+\begin_inset Formula $f_{v}$
+\end_inset
+
+ statistic are generated from the corresponding binomial distribution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For this, 
+\begin_inset Formula $f_{v,ZM}$
+\end_inset
+
+ and 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ have been estimated for 1000 random samplings of the data order and summarized
+ by their mean value and 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% confidence intervals (red square in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fVal"
+
+\end_inset
+
+(a)).
+ To account for the finite number of bins, each value has also been perturbed
+ by binomial noise (orange diamonds in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fVal"
+
+\end_inset
+
+(a)).
+ In the present case, the dispersion due to data reordering is small when
+ compared to the binomial uncertainty for both statistics.
+ The data ordering uncertainty is not sufficient to get an overlap of the
+ confidence interval for 
+\begin_inset Formula $f_{\nu,ZMS}$
+\end_inset
+
+ with the target coverage (0.95), validating the conclusions of the nominal
+ LZMS analysis.
+ 
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figs/FigShort_03.png
+	lyxscale 25
+	width 99text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:fVal"
+
+\end_inset
+
+Fraction of validated bins for 
+\begin_inset Formula $<Z>$
+\end_inset
+
+ and 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+ according to three conditioning variables.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+Nominal
+\begin_inset Quotes erd
+\end_inset
+
+ values (black circles) result from equal-sized binning with 100 bins of
+ the dataset and the error bar depicts a 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% confidence interval due to the binomial distribution.
+ They correspond to the values reported in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eqBin"
+
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+Random order
+\begin_inset Quotes erd
+\end_inset
+
+ values (red squares) display the mean and 95
+\begin_inset space \thinspace{}
+\end_inset
+
+% confidence interval for a random ordering of the dataset (based on 1000
+ permutations).
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+Random + Binomial
+\begin_inset Quotes erd
+\end_inset
+
+ values (orange diamonds) combine the binomial uncertainty with the previous
+ values.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+Stratified
+\begin_inset Quotes erd
+\end_inset
+
+ values (green triangles) are the statistics for the binning scheme based
+ on the preservation of strata, with binomial uncertainty.
+ They correspond to the values reported in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:strata"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Adaptivity is tested using the same protocol.
+ For the molecular mass [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eqBin"
+
+\end_inset
+
+(b,e,g)], the fraction of biased bins reaches 12
+\begin_inset space \thinspace{}
+\end_inset
+
+% (
+\begin_inset Formula $f_{v,ZM}=0.88$
+\end_inset
+
+) and the fraction of deviant bins for 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+ is about 40
+\begin_inset space \thinspace{}
+\end_inset
+
+% (
+\begin_inset Formula $f_{v,ZMS}=0.59$
+\end_inset
+
+).
+ There is a strong predominance of deviant bins for the masses below 120
+ Da, where the small values of the statistic point to overestimated uncertaintie
+s.
+ In consequence, the ACF of the LZMS series presents a slow and incomplete
+ decay, to be compared with the one obtained for 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+.
+ If one accepts that there is no strong bias of 
+\begin_inset Formula $Z$
+\end_inset
+
+ in this area, values of 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+ around 0.5 can be interpreted as an excess factor of 
+\begin_inset Formula $1/\sqrt{0.5}\simeq1.4$
+\end_inset
+
+ for the uncertainties.
+ Here again, despite the notable stratification of the molecular masses,
+ the ordering of the data has not a strong impact on the 
+\begin_inset Formula $f_{v}$
+\end_inset
+
+ statistic (Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fVal"
+
+\end_inset
+
+(b)).
+ 
+\end_layout
+
+\begin_layout Standard
+For the fraction of heteroatoms [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eqBin"
+
+\end_inset
+
+(c,f,i)], the LZM analysis displays the same trend from positive to negative
+ 
+\begin_inset Formula $<Z>$
+\end_inset
+
+ values as observed in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plot-of-errors"
+
+\end_inset
+
+(c), with a sub-optimal fraction of valid bins (
+\begin_inset Formula $f_{v,ZM}=0.88$
+\end_inset
+
+).
+ The LZMS analysis reveals clusters of deviant bins at several spots along
+ the 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+ axis, which is reflected in a slowly decreasing ACF.
+ The fraction of valid bins is small (
+\begin_inset Formula $f_{v,ZMS}=0.6$
+\end_inset
+
+).
+ Here again, despite the strong stratification of 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+, the 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ statistic is not strongly affected by the reordering perturbation [Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fVal"
+
+\end_inset
+
+(c)].
+ This confirms the lack of adaptivity of these uncertainties.
+
+\color orange
+ 
+\end_layout
+
+\begin_layout Standard
+The LZM/LZMS analysis based on stratified binning with a minimum of 100
+ points per bin is presented in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:strata"
+
+\end_inset
+
+, and the 
+\begin_inset Formula $f_{v}$
+\end_inset
+
+ values are also reported in Fig.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fVal"
+
+\end_inset
+
+.
+ This representation is less crowded than the equal-size binning and provides
+ essentially the same conclusions.
+ One notes more severe values of the 
+\begin_inset Formula $f_{v}$
+\end_inset
+
+ statistic for the adaptivity analysis with larger error bars due to a smaller
+ number of bins.
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_04a.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_04b.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_04c.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_04d.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_04e.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Figs/FigShort_04f.png
+	lyxscale 20
+	width 33text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:strata"
+
+\end_inset
+
+QM9 validation dataset.
+ LZM, LZMS analyses vs.
+ 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ (a, d), molecular mass (b, e) and fraction of heteroatoms (c, f).
+ The data have been aggregated to get a minimum of 100 points per stratum.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All diagnostics based on 
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ conclude therefore to a good calibration and an acceptable consistency.
+ The main feature revealed by this reanalysis is the lack of adaptivity
+ seen by the LZMS analysis for both molecular mass and fraction of heteroatoms.
+ A major trend is a significant underestimation of the quality of predictions
+ for the smaller molecules in the QM9 dataset (below 120 Da) and also for
+ those with small fractions of heteroatoms (below 0.1).
+\begin_inset space \hfill{}
+\end_inset
+
+
+\size scriptsize
+ 
+\begin_inset Formula $\boldsymbol{\square}$
+\end_inset
+
+
+\size default
+ 
+\end_layout
+
+\begin_layout Section
+Discussion
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Discussion"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+I proposed an approach to the validation of conditional calibration based
+ on the first two moments of the
+\emph on
+ 
+\emph default
+binned
+\emph on
+ z
+\emph default
+-scores.
+ The Local Z Mean Squares (LZMS) plots enable to test conditional calibration
+ for any conditioning variable.
+ A validation metric 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ based on the proportion of bins with confidence intervals containing the
+ target value was studied.
+ The case study was based on a dataset with several sources of stratification.
+ It was shown that the uncertainty due to the interplay of equal-size binning
+ with data ordering is not dominant for the statistics considered here.
+ An alternative strata-based binning LZMS approach led to similar diagnostics,
+ with the inconvenience of a larger uncertainty on the validation statistics
+ due to the smaller number of bins.
+\end_layout
+
+\begin_layout Standard
+Let us consider now how the more usual methods used in the literature could
+ be adapted to test adaptivity.
+ 
+\end_layout
+
+\begin_layout Subsection
+Reliability diagrams
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Reliability-diagram"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+So-called reliability diagrams
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Guo2017,Levi2020"
+
+\end_inset
+
+ test consistency through Eq.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:varEvalCond"
+
+\end_inset
+
+ over data subsets, where the data are ordered by increasing 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ values and split into bins.
+ Reliability diagrams can also be found in the literature as 
+\emph on
+error-based calibration plots
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Scalia2020"
+
+\end_inset
+
+, 
+\emph on
+RvE
+\emph default
+ plots
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Palmer2022"
+
+\end_inset
+
+, or 
+\emph on
+RMSE vs.
+ RMV
+\emph default
+ curves
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Vazquez-Salazar2022"
+
+\end_inset
+
+.
+ For convenience, the square roots of the terms of Eq.
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:varEvalCond"
+
+\end_inset
+
+ are used, linking the mean uncertainty in each bin (as the 
+\emph on
+root mean squared
+\emph default
+ (RMS) of 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+, also called 
+\emph on
+root mean variance
+\emph default
+ (RMV)) with the RMSE of 
+\begin_inset Formula $E$
+\end_inset
+
+.
+ For consistent datasets, the reliability curve should lie close to the
+ identity line, up to statistical fluctuations due to finite bin counts.
+ 
+\end_layout
+
+\begin_layout Standard
+By construction, the reliability diagram is not easily modified to test
+ for adaptivity.
+ It would require a secondary binning in 
+\begin_inset Formula $X$
+\end_inset
+
+ space and the estimation of a reliability curve for each subset.
+ This two-dimensional binning would require a lot of data for reliable statistic
+s.
+ Moreover, the superimposition of these partial reliability curves would
+ render the analysis difficult.
+ 
+\end_layout
+
+\begin_layout Standard
+An alternative formulation, that provides a more malleable approach for
+ adaptivity testing, is to use the relative calibration error
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Levi2022"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+RCE(E,u_{E})=\frac{RMV-RMSE}{RMV}
+\end{equation}
+
+\end_inset
+
+leading to
+\begin_inset Formula 
+\begin{equation}
+RCE(E,u_{E})\simeq0
+\end{equation}
+
+\end_inset
+
+and conditional equations that can be easily implemented through binning.
+ I did not pursue with this option of a Local RCE (LRCE) analysis because
+ I found it difficult to converge reliable confidence intervals on the RCE
+ statistic by bootstrapping, leading to discouraging computing times for
+ the estimation of a validation statistic (
+\begin_inset Formula $f_{v,RCE}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Subsection
+Confidence curves
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Confidence-curves"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\emph on
+Confidence curves
+\emph default
+ derive from another validation approach, known as 
+\emph on
+sparsification error curves
+\emph default
+ mainly used in computer vision.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Ilg2018,Scalia2020"
+
+\end_inset
+
+ They were not intended to validate calibration, but to estimate the correlation
+ between absolute errors and UQ metrics.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Tynes2021"
+
+\end_inset
+
+ Recently, Pernot
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022c"
+
+\end_inset
+
+ showed that the standard reference curve (the so-called 
+\emph on
+oracle
+\emph default
+) used for the evaluation of confidence curves is irrelevant for variance-based
+ UQ metrics, and he proposed a 
+\emph on
+probabilistic reference 
+\emph default
+that enables to test consistency.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+A confidence curve is established by estimating an error statistic 
+\begin_inset Formula $S$
+\end_inset
+
+ on subsets of the validation data iteratively pruned from the points with
+ the largest uncertainties.
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Scalia2020"
+
+\end_inset
+
+ If one defines 
+\begin_inset Formula $u_{k}$
+\end_inset
+
+ as the largest uncertainty left after removing the 
+\begin_inset Formula $k$
+\end_inset
+
+
+\begin_inset space \thinspace{}
+\end_inset
+
+% largest uncertainties from 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ (
+\begin_inset Formula $k\in\{0,1,\ldots,99\}$
+\end_inset
+
+), a confidence statistic is defined by
+\begin_inset Formula 
+\begin{equation}
+c_{S}(k;E,u_{E})=S\left(E\,|\,u_{E}<u_{k}\right)\label{eq:non-normcc}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $S$
+\end_inset
+
+ is an error statistic – typically the Mean Absolute Error (MAE) or Root
+ Mean Squared Error (RMSE) – and 
+\begin_inset Formula $S\left(E\,|\,u_{E}<u_{k}\right)$
+\end_inset
+
+ denotes that only those errors 
+\begin_inset Formula $E_{i}$
+\end_inset
+
+ paired with uncertainties 
+\begin_inset Formula $u_{E_{i}}$
+\end_inset
+
+ smaller than 
+\begin_inset Formula $u_{k}$
+\end_inset
+
+ are selected to compute 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ A confidence curve is obtained by plotting 
+\begin_inset Formula $c_{S}$
+\end_inset
+
+ against 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ Both normalized and non-normalized confidence curves are used in the literature
+, but the RMSE-based non-normalized version should be preferred for the
+ validation of variance-based UQ metrics
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Pernot2022c"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As for reliability diagrams, extension of this method to adaptivity testing
+ would require to estimate confidence curves for subsets of the validation
+ dataset and to compare each of them with its specific reference curve,
+ leading to a rather cumbersome validation method.
+ 
+\end_layout
+
+\begin_layout Section
+Conclusions
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Conclusion"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The concept of conditional calibration enables to define two aspects of
+ local calibration: consistency, which assesses the reliability of UQ metrics
+ across the range of uncertainty values, and adaptivity, which assesses
+ the reliability of UQ metrics across the range of input features.
+ As the validation of individual calibration is practically impossible,
+ one has to rely on validation methods based on local or group calibration,
+ making consistency and adaptivity complementary validation targets.
+ 
+\end_layout
+
+\begin_layout Standard
+Consistency and adaptivity can be tested by binned statistics such as the
+ mean of squared 
+\emph on
+z-
+\emph default
+scores 
+\begin_inset Formula $<Z^{2}>$
+\end_inset
+
+, leading to the LZMS analysis.
+ Bins with large deviations from the target value (typically 1) and groups
+ of adjacent bins with similar deviations reveal local calibration errors.
+ In complement, the fraction of validated bins 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ can be used as a validation metric.
+ The validation based on 
+\begin_inset Formula $f_{v,ZMS}$
+\end_inset
+
+ requires rather large bins (no less than 100 points per bin) and ideally
+ more than 100 bins, which limits its use to large datasets (typically more
+ than 
+\begin_inset Formula $10^{4}$
+\end_inset
+
+ points).
+ A perturbation of the binning strategy has been shown to occur when a condition
+ing variable is stratified, and it was shown how to handle this situation.
+\end_layout
+
+\begin_layout Standard
+Up to now, ML-UQ validation studies in chemical and materials sciences are
+ mainly focused on consistency.
+ This covers somehow the concerns of ML-UQ designers who want the reliability
+ of all uncertainties, either small or large.
+ It was shown however that a positive consistency diagnostic does not augur
+ of a positive adaptivity diagnostic.
+ There is therefore a strong need that adaptivity be also considered, notably
+ for final users, who expect the reliability of uncertainty for individual
+ predictions, throughout the input features space.
+ 
+\end_layout
+
+\begin_layout Section*
+Acknowledgments
+\end_layout
+
+\begin_layout Standard
+\noindent
+I warmly thank J.
+ Busk for providing me the data for the running example of this study.
+\end_layout
+
+\begin_layout Section*
+Author Declarations
+\end_layout
+
+\begin_layout Subsection*
+Conflict of Interest
+\end_layout
+
+\begin_layout Standard
+The author has no conflicts to disclose.
+\end_layout
+
+\begin_layout Section*
+Code and data availability
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Code-and-data"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The code and data to reproduce the results of this article are available
+ at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/ppernot/2023_Primer/releases/tag/v1.0
+\end_layout
+
+\end_inset
+
+ and at Zenodo (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://doi.org/10.5281/zenodo.7731669
+\end_layout
+
+\end_inset
+
+).
+ The 
+\family typewriter
+R
+\family default
+,
+\begin_inset CommandInset citation
+LatexCommand citep
+key "RTeam2019"
+
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ErrViewLib"
+target "https://github.com/ppernot/ErrViewLib"
+
+\end_inset
+
+ package implements the validation functions used in the present study,
+ under version 
+\family typewriter
+ErrViewLib-v1.7.0
+\family default
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/ppernot/ErrViewLib/releases/tag/v1.7.0
+\end_layout
+
+\end_inset
+
+), also available at Zenodo (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://doi.org/10.5281/zenodo.7729100
+\end_layout
+
+\end_inset
+
+).
+
+\color orange
+ 
+\color inherit
+The 
+\family typewriter
+UncVal
+\family default
+ graphical interface to explore the main UQ validation methods provided
+ by 
+\family typewriter
+ErrViewLib
+\family default
+ is also freely available (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/ppernot/UncVal
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "NN"
+options "unsrturlPP"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
