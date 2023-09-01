@@ -1,8 +1,10 @@
 figDir = '../Figs'
 library(ErrViewLib)
 library(CHNOSZ)
-gPars = ErrViewLib::setgPars(type = 'publish')
+gPars = ErrViewLib::setgPars(type = 'publish'); gPars$cex = 4.5
 scalePoints = 0.2
+
+set.seed(123) # Reproducibility
 
 fractHetero = function(S) {
   fHetero = c()
@@ -679,6 +681,7 @@ par(
   pty = 'm',
   tcl = gPars$tcl,
   cex = gPars$cex,
+  cex.main = 1,
   lwd = gPars$lwd
 )
 
@@ -745,6 +748,15 @@ for(i in seq_along(names(resCI))) {
       col = cols[1:4]
     )
   box()
+
+  label = i
+  mtext(
+    text = paste0('(', letters[label], ')'),
+    side = 3,
+    adj = 1,
+    cex = gPars$cex,
+    line = 0.25
+  )
 }
 
 dev.off()
