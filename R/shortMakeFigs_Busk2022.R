@@ -73,10 +73,10 @@ print(signif(cor(cbind(masses,fHetero,abs(E),uE),method = "spearman"),2))
 
 # Figs ####
 
-## Fig 01a ####
+## Fig 02 ####
 nBin = 100
 png(
-  file = file.path(figDir, 'FigShort_01a.png'),
+  file = file.path(figDir, 'Fig_02a.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -99,9 +99,8 @@ ErrViewLib::plotEvsPU(
 )
 dev.off()
 
-## Fig 01b ####
 png(
-  file = file.path(figDir, 'FigShort_01b.png'),
+  file = file.path(figDir, 'Fig_02b.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -124,9 +123,8 @@ ErrViewLib::plotEvsPU(
 )
 dev.off()
 
-## Fig 01c ####
 png(
-  file = file.path(figDir, 'FigShort_01c.png'),
+  file = file.path(figDir, 'Fig_02c.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -149,39 +147,15 @@ ErrViewLib::plotEvsPU(
 )
 dev.off()
 
-## Fig 01d ####
-png(
-  file = file.path(figDir, 'FigShort_01d.png'),
-  width  = gPars$reso,
-  height = gPars$reso
-)
-sam = sample(M,M)
-ErrViewLib::plotEvsPU(
-  fHetero[sam],
-  Z[sam],
-  type = 'horiz',
-  logX = FALSE,
-  runQuant = TRUE,
-  runMS = TRUE,
-  scalePoints = scalePoints,
-  xlim = c(-0.05,0.8),
-  ylim = c(-5, 5),
-  xlab = "Fraction of heteroatoms",
-  label = 3,
-  showLegend = FALSE,
-  gPars = gPars
-)
-dev.off()
 
-# ## Fig 02a ####
+# ## Fig 03 ####
 
 slide = FALSE
 nBin  = 100
 
-## Fig 02a ####
 ylim = c(-0.5,0.5)
 png(
-  file = file.path(figDir, 'FigShort_02a.png'),
+  file = file.path(figDir, 'Fig_03a.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -197,16 +171,10 @@ resZMu = ErrViewLib::plotLZM(
   label = 1,
   gPars = gPars
 )
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
 dev.off()
 
-
-## Fig 02b ####
 png(
-  file = file.path(figDir, 'FigShort_02b.png'),
+  file = file.path(figDir, 'Fig_03b.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -223,15 +191,10 @@ resZMmass = ErrViewLib::plotLZM(
   label = 2,
   gPars = gPars
 )
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
 dev.off()
 
-## Fig 02c ####
 png(
-  file = file.path(figDir, 'FigShort_02c.png'),
+  file = file.path(figDir, 'Fig_03c.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -248,16 +211,11 @@ resZMfHet = ErrViewLib::plotLZM(
   label = 3,
   gPars = gPars
 )
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
 dev.off()
 
-## Fig 02d ####
 ylim = c(0.0,2.5)
 png(
-  file = file.path(figDir, 'FigShort_02d.png'),
+  file = file.path(figDir, 'Fig_03d.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -275,15 +233,10 @@ resZMSu = ErrViewLib::plotLZMS(
   label = 4,
   gPars = gPars
 )
-# title(main = paste0('fv = ',round(res1$fVal,2),
-#                     ', CI = [',round(res1$lofVal,2),', ',
-#                     round(res1$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
 dev.off()
 
-## Fig 02e ####
 png(
-  file = file.path(figDir, 'FigShort_02e.png'),
+  file = file.path(figDir, 'Fig_03e.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -303,15 +256,10 @@ resZMSmass = ErrViewLib::plotLZMS(
   label = 5,
   gPars = gPars
 )
-# title(main = paste0('fv = ',round(res2$fVal,2),
-#                     ', CI = [',round(res2$lofVal,2),', ',
-#                     round(res2$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
 dev.off()
 
-## Fig 02f ####
 png(
-  file = file.path(figDir, 'FigShort_02f.png'),
+  file = file.path(figDir, 'Fig_03f.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -331,75 +279,38 @@ resZMSfHet = ErrViewLib::plotLZMS(
   label = 6,
   gPars = gPars
 )
-# title(main = paste0('fv = ',round(res3$fVal,2),
-#                     ', CI = [',round(res3$lofVal,2),', ',
-#                     round(res3$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
 dev.off()
 
-# fvRes = rbind(
-#   data.frame(
-#     cv = 'uE',
-#     fvZM = round(resZMu$fVal,2),
-#     ciZM = paste0('[',round(resZMu$lofVal,2),', ',
-#                       round(resZMu$upfVal,2),']'),
-#     fvZMS = round(resZMSu$fVal,2),
-#     ciZMS = paste0('[',round(resZMSu$lofVal,2),', ',
-#                   round(resZMSu$upfVal,2),']')
-#   ),
-#   data.frame(
-#     cv = 'X1',
-#     fvZM = round(resZMmass$fVal,2),
-#     ciZM = paste0('[',round(resZMmass$lofVal,2),', ',
-#                   round(resZMmass$upfVal,2),']'),
-#     fvZMS = round(resZMSmass$fVal,2),
-#     ciZMS = paste0('[',round(resZMSmass$lofVal,2),', ',
-#                    round(resZMSmass$upfVal,2),']')
-#   ),
-#   data.frame(
-#     cv = 'X2',
-#     fvZM = round(resZMfHet$fVal,2),
-#     ciZM = paste0('[',round(resZMfHet$lofVal,2),', ',
-#                   round(resZMfHet$upfVal,2),']'),
-#     fvZMS = round(resZMSfHet$fVal,2),
-#     ciZMS = paste0('[',round(resZMSfHet$lofVal,2),', ',
-#                    round(resZMSfHet$upfVal,2),']')
-#   )
-# )
-
-## Fig 02g ####
 png(
-  file = file.path(figDir, 'FigShort_02g.png'),
+  file = file.path(figDir, 'Fig_03g.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
-ErrViewLib::plotACF(res1$pc, label = 7, gPars = gPars)
+ErrViewLib::plotACF(resZMSu$pc, label = 7, gPars = gPars)
 dev.off()
 
-## Fig 02h ####
 png(
-  file = file.path(figDir, 'FigShort_02h.png'),
+  file = file.path(figDir, 'Fig_03h.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
-ErrViewLib::plotACF(res2$pc, label = 8, gPars = gPars)
+ErrViewLib::plotACF(resZMSmass$pc, label = 8, gPars = gPars)
 dev.off()
 
-## Fig 02i ####
 png(
-  file = file.path(figDir, 'FigShort_02i.png'),
+  file = file.path(figDir, 'Fig_03i.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
-ErrViewLib::plotACF(res3$pc, label = 9, gPars = gPars)
+ErrViewLib::plotACF(resZMSfHet$pc, label = 9, gPars = gPars)
 dev.off()
 
 
-## Fig 04a ####
+## Fig 05 ####
 ylim = c(-1, 1)
 popMin = 100
 png(
-  file = file.path(figDir, 'FigShort_04a.png'),
+  file = file.path(figDir, 'Fig_05a.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -410,16 +321,10 @@ resZMustr = ErrViewLib::plotStratZM(
   ylim = ylim,
   label = 1,
   gPars = gPars)
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
-# resZMustr = res
 dev.off()
 
-## Fig 04b ####
 png(
-  file = file.path(figDir, 'FigShort_04b.png'),
+  file = file.path(figDir, 'Fig_05b.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -430,16 +335,10 @@ resZMmassstr = ErrViewLib::plotStratZM(
   ylim = ylim,
   label = 2,
   gPars = gPars)
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
-# resmassZM = res
 dev.off()
 
-## Fig 04c ####
 png(
-  file = file.path(figDir, 'FigShort_04c.png'),
+  file = file.path(figDir, 'Fig_05c.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -450,17 +349,11 @@ resZMfHetstr = ErrViewLib::plotStratZM(
   ylim = ylim,
   label = 3,
   gPars = gPars)
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
-# resfHetZM = res
 dev.off()
 
-## Fig 04d ####
 ylim = c(0, 2)
 png(
-  file = file.path(figDir, 'FigShort_04d.png'),
+  file = file.path(figDir, 'Fig_05d.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -472,16 +365,10 @@ resZMSustr = ErrViewLib::plotStratZMS(
   ylim = ylim,
   label = 4,
   gPars = gPars)
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
-# resZMS = res
 dev.off()
 
-## Fig 04e ####
 png(
-  file = file.path(figDir, 'FigShort_04e.png'),
+  file = file.path(figDir, 'Fig_05e.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -493,16 +380,10 @@ resZMSmassstr = ErrViewLib::plotStratZMS(
   ylim = ylim,
   label = 5,
   gPars = gPars)
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
-# resmassZMS = res
 dev.off()
 
-## Fig 04f ####
 png(
-  file = file.path(figDir, 'FigShort_04f.png'),
+  file = file.path(figDir, 'Fig_05f.png'),
   width  = gPars$reso,
   height = gPars$reso
 )
@@ -514,68 +395,15 @@ resZMSfHetstr = ErrViewLib::plotStratZMS(
   ylim = ylim,
   label = 6,
   gPars = gPars)
-# title(main = paste0('fv = ',round(res$fVal,2),
-#                     ', CI = [',round(res$lofVal,2),', ',
-#                     round(res$upfVal,2),']'),
-#       line = 1, font.main = 1, cex.main = 1.1)
-# resfHetZMS = res
 dev.off()
 
-# fvResstr = rbind(
-#   data.frame(
-#     cv = 'uE',
-#     fvZM = round(resZMustr$fVal,2),
-#     ciZM = paste0('[',round(resZMustr$lofVal,2),', ',
-#                   round(resZMustr$upfVal,2),']'),
-#     fvZMS = round(resZMSustr$fVal,2),
-#     ciZMS = paste0('[',round(resZMSustr$lofVal,2),', ',
-#                    round(resZMSustr$upfVal,2),']')
-#   ),
-#   data.frame(
-#     cv = 'X1',
-#     fvZM = round(resZMmassstr$fVal,2),
-#     ciZM = paste0('[',round(resZMmassstr$lofVal,2),', ',
-#                   round(resZMmassstr$upfVal,2),']'),
-#     fvZMS = round(resZMSmassstr$fVal,2),
-#     ciZMS = paste0('[',round(resZMSmassstr$lofVal,2),', ',
-#                    round(resZMSmassstr$upfVal,2),']')
-#   ),
-#   data.frame(
-#     cv = 'X2',
-#     fvZM = round(resZMfHetstr$fVal,2),
-#     ciZM = paste0('[',round(resZMfHetstr$lofVal,2),', ',
-#                   round(resZMfHetstr$upfVal,2),']'),
-#     fvZMS = round(resZMSfHetstr$fVal,2),
-#     ciZMS = paste0('[',round(resZMSfHetstr$lofVal,2),', ',
-#                    round(resZMSfHetstr$upfVal,2),']')
-#   )
-# )
 
-## Fig03 ####
+## Fig04 ####
 
 nMC = 1000
 nBin = 100
 
-# resZM0 = ErrViewLib::plotLZM(
-#   uE, Z,
-#   nBin = nBin, plot = FALSE)
-# resZMS0 = ErrViewLib::plotLZMS(
-#   uE, Z,
-#   nBin = nBin, plot = FALSE, score = TRUE)
-# resmassZM0 = ErrViewLib::plotLZM(
-#   masses, Z,
-#   nBin = nBin, plot = FALSE)
-# resmassZMS0 = ErrViewLib::plotLZMS(
-#   masses, Z,
-#   nBin = nBin, plot = FALSE, score = TRUE)
-# resfHetZM0 = ErrViewLib::plotLZM(
-#   fHetero, Z,
-#   nBin = nBin, plot = FALSE)
-# resfHetZMS0 = ErrViewLib::plotLZMS(
-#   fHetero, Z,
-#   nBin = nBin, plot = FALSE, score = TRUE)
-
-fRes = paste0(figDir,'/res_fig03.Rda')
+fRes = paste0(figDir,'/res_fig04.Rda')
 if(!file.exists(fRes)) {
 
   fVal = resZMu$isVal
@@ -730,7 +558,7 @@ resCI[['fHet']]$stratZM  = resZMfHetstr
 resCI[['fHet']]$stratZMS = resZMSfHetstr
 
 png(
-  file = file.path(figDir, 'FigShort_03.png'),
+  file = file.path(figDir, 'Fig_04.png'),
   width  = 2.4*gPars$reso,
   height = gPars$reso
 )
