@@ -6,4 +6,4 @@
 # 2023_Adaptivity
 
 Code and data to reproduce the results of 
-"Consistency and adaptivity as complementary targets for the validation of variance-based uncertainty quantification metrics in machine learning regression tasks" by P. Pernot
+"Calibration in Machine Learning Uncertainty Quantification: beyond consistency to target adaptivity" by P. Pernot ( [arXiv](https://doi.org/10.48550/arXiv.2309.06240); [APL Mach. Learn. 1:046121 (2023)](https://doi.org/10.1063/5.0174943) )
